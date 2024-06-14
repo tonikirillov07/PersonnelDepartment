@@ -2,9 +2,7 @@ package com.ds.personneldepartment.pages;
 
 import com.ds.personneldepartment.additionalNodes.AdditionalButton;
 import com.ds.personneldepartment.additionalNodes.AdditionalMenuButton;
-import com.ds.personneldepartment.database.tables.Staff;
-import com.ds.personneldepartment.records.RecordsGetter;
-import com.ds.personneldepartment.records.StaffRecord;
+import com.ds.personneldepartment.records.*;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -69,9 +67,30 @@ public class MainPage extends Page{
         MenuItem vacanciesMenuButton = new MenuItem("Вакантные места");
         MenuItem interviewsMenuButton = new MenuItem("Лица, намеченные на собеседование");
         MenuItem jobApplicationsMenuButton = new MenuItem("Заявление на прием");
-        MenuItem notPassedLaborLawMenuButton = new MenuItem("Не прошедшие курс трудового права");
+        MenuItem notPassedLaborLawMenuButton = new MenuItem("Не прошедшие курс трудового права (" + ((getAllNotPassedLaborLaw().size() * 100) / Objects.requireNonNull(getAllStaffs()).size()) + "%)");
         MenuItem dismissedMenuButton = new MenuItem("Лица, привлекаемые к увольнению");
         anotherMenuButton.getItems().addAll(vacanciesMenuButton, interviewsMenuButton, jobApplicationsMenuButton, notPassedLaborLawMenuButton, dismissedMenuButton);
+
+        jobApplicationsMenuButton.setOnAction(actionEvent -> {
+            defaultCategoryMenuItemsAction(jobApplicationsMenuButton, anotherMenuButton);
+            displayAllJobApps(Objects.requireNonNull(getAllJobApps()));
+        });
+        interviewsMenuButton.setOnAction(actionEvent -> {
+            defaultCategoryMenuItemsAction(interviewsMenuButton, anotherMenuButton);
+            displayAllInterviews(getAllInterviews());
+        });
+        vacanciesMenuButton.setOnAction(actionEvent -> {
+            defaultCategoryMenuItemsAction(vacanciesMenuButton, anotherMenuButton);
+            displayAllVacancies(RecordsGetter.getAllVacancies());
+        });
+        notPassedLaborLawMenuButton.setOnAction(actionEvent -> {
+            defaultCategoryMenuItemsAction(notPassedLaborLawMenuButton, anotherMenuButton);
+            displayStaffs(getAllNotPassedLaborLaw());
+        });
+        dismissedMenuButton.setOnAction(actionEvent -> {
+            defaultCategoryMenuItemsAction(dismissedMenuButton, anotherMenuButton);
+            displayStaffs(getAllMayBeDismissed());
+        });
 
         AdditionalMenuButton divisionsMenuButton = new AdditionalMenuButton("Подразделения");
         getAllDivisions().forEach(division -> {
@@ -88,6 +107,7 @@ public class MainPage extends Page{
 
         MenuItem allMenuItems = new MenuItem("Все");
         allMenuItems.setOnAction(actionEvent -> {
+            anotherMenuButton.setText("Другое");
             defaultCategoryMenuItemsAction(allMenuItems, divisionsMenuButton);
             displayStaffs(Objects.requireNonNull(getAllStaffs()));
         });
@@ -100,15 +120,6 @@ public class MainPage extends Page{
         anotherHbox.setPadding(new Insets(10d));
         HBox.setHgrow(anotherHbox, Priority.ALWAYS);
 
-        notPassedLaborLawMenuButton.setOnAction(actionEvent -> {
-            defaultCategoryMenuItemsAction(notPassedLaborLawMenuButton, anotherMenuButton);
-            displayStaffs(getAllNotPassedLaborLaw());
-        });
-        dismissedMenuButton.setOnAction(actionEvent -> {
-            defaultCategoryMenuItemsAction(dismissedMenuButton, anotherMenuButton);
-            displayStaffs(getAllMayBeDismissed());
-        });
-
         anotherHbox.getChildren().add(anotherMenuButton);
 
         hBox.getChildren().addAll(divisionHbox, anotherHbox);
@@ -117,6 +128,7 @@ public class MainPage extends Page{
 
     private void createTableView() {
         tableView = new TableView();
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(tableView, Priority.ALWAYS);
 
         scrollPaneContentVbox.getChildren().add(tableView);
@@ -126,6 +138,56 @@ public class MainPage extends Page{
     private void clearTableView(){
         tableView.getItems().clear();
         tableView.getColumns().clear();
+    }
+
+    private void displayAllJobApps(@NotNull List<JobAppRecord> jobAppRecordList){
+        clearTableView();
+
+        TableColumn<JobAppRecord, Long> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(cellData -> new SimpleLongProperty(cellData.getValue().getId()).asObject());
+
+        TableColumn<JobAppRecord, String> appColumn = new TableColumn<>("Заявление");
+        appColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApp()));
+
+        double vacanciesToAppsRatio = (double) Objects.requireNonNull(getAllVacancies()).size() / jobAppRecordList.size();
+
+        TableColumn<JobAppRecord, Double> vacanciesToAppsRationColumn = new TableColumn<>("Отношение вакансий и заявлений");
+        vacanciesToAppsRationColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(vacanciesToAppsRatio));
+
+        tableView.getColumns().addAll(idColumn, appColumn, vacanciesToAppsRationColumn);
+        tableView.getItems().addAll(jobAppRecordList);
+    }
+
+    private void displayAllInterviews(List<InterviewRecord> interviewRecordList){
+        clearTableView();
+
+        TableColumn<InterviewRecord, Long> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(cellData -> new SimpleLongProperty(cellData.getValue().getId()).asObject());
+
+        TableColumn<InterviewRecord, String> nameColumn = new TableColumn<>("Имя");
+        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+
+        tableView.getColumns().addAll(idColumn, nameColumn);
+        tableView.getItems().addAll(interviewRecordList);
+    }
+
+    private void displayAllVacancies(List<VacanciesRecord> vacanciesRecordList){
+        clearTableView();
+
+        TableColumn<VacanciesRecord, Long> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(cellData -> new SimpleLongProperty(cellData.getValue().getId()).asObject());
+
+        TableColumn<VacanciesRecord, String> nameColumn = new TableColumn<>("Название вакансии");
+        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+
+        TableColumn<VacanciesRecord, String> divisionColumn = new TableColumn<>("Подразделение");
+        divisionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDivision()));
+
+        TableColumn<VacanciesRecord, String> countryColumn = new TableColumn<>("Страна");
+        countryColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCountry()));
+
+        tableView.getColumns().addAll(idColumn, nameColumn, divisionColumn, countryColumn);
+        tableView.getItems().addAll(vacanciesRecordList);
     }
 
     private void displayStaffs(@NotNull List<StaffRecord> staffRecords){
@@ -168,7 +230,8 @@ public class MainPage extends Page{
         hBox.setSpacing(15d);
         VBox.setMargin(hBox, new Insets(15d, 0d, 15d, 0d));
 
-        AdditionalButton addDataButton = new AdditionalButton("Добавить данные", 200, 40, "#3F1560", Color.WHITE);
+        AdditionalButton addDataButton = new AdditionalButton("Добавить данные", 200d, 40d, "#3F1560", Color.WHITE);
+        addDataButton.setOnAction(actionEvent -> new AddDataPage(this, getContentVbox(), "Добавить").open());
 
         hBox.getChildren().add(addDataButton);
         addNodeToTile(hBox);

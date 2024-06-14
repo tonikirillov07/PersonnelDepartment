@@ -2,6 +2,7 @@ package com.ds.personneldepartment.utils;
 
 import com.ds.personneldepartment.Constants;
 import com.ds.personneldepartment.Main;
+import com.ds.personneldepartment.additionalNodes.AdditionalTextField;
 import com.ds.personneldepartment.utils.dialogs.ErrorDialog;
 import com.ds.personneldepartment.utils.dialogs.InfoDialog;
 import com.ds.personneldepartment.utils.settings.SettingsManager;
@@ -17,10 +18,26 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public final class Utils {
+    public static @NotNull List<AdditionalTextField> getEmptyFieldsFromArray(AdditionalTextField[] textFields){
+        List<AdditionalTextField> textInputControlList = new ArrayList<>();
+
+        Arrays.stream(textFields).toList().forEach(textInputControl -> {
+            if (textInputControl == null)
+                return;
+
+            if (textInputControl.getText().trim().isEmpty())
+                textInputControlList.add(textInputControl);
+        });
+
+        return textInputControlList;
+    }
+
     @Contract("_ -> new")
     public static @NotNull Image getImage(String path){
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(path)));
@@ -66,5 +83,26 @@ public final class Utils {
 
     public static void defaultCategoryMenuItemsAction(@NotNull MenuItem menuItem, @NotNull MenuButton menuButton){
         menuButton.setText(menuItem.getText());
+    }
+
+    public static boolean checkPhoneNumber(@NotNull String phoneNumber){
+        if(phoneNumber.length() < 10){
+            ErrorDialog.show(new Exception("Введите корректный номер телефона. Длина телефона меньше 10"));
+            return false;
+        }
+
+        if(!phoneNumber.contains("+")){
+            ErrorDialog.show(new Exception("Введите корректный номер телефона. Номер не содержит +"));
+            return false;
+        }
+
+        for (char c : phoneNumber.toCharArray()) {
+            if(!Character.isDigit(c) & c != '+'){
+                ErrorDialog.show(new Exception("Введите корректный номер телефона. Неподдерживаемые символы"));
+                return false;
+            }
+        }
+
+        return true;
     }
 }

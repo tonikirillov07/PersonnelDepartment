@@ -3,6 +3,7 @@ package com.ds.personneldepartment.records;
 import com.ds.personneldepartment.Constants;
 import com.ds.personneldepartment.database.DatabaseService;
 import com.ds.personneldepartment.database.tables.Interviews;
+import com.ds.personneldepartment.database.tables.JobApplications;
 import com.ds.personneldepartment.database.tables.Staff;
 import com.ds.personneldepartment.database.tables.Vacancies;
 import com.ds.personneldepartment.utils.dialogs.ErrorDialog;
@@ -93,7 +94,8 @@ public final class RecordsGetter {
 
             List<VacanciesRecord> vacanciesRecords = new ArrayList<>();
             while (resultSet.next()){
-                vacanciesRecords.add(new VacanciesRecord(Vacancies.TABLE_NAME, SettingsManager.getValue(CURRENT_DATABASE_FILE_KEY), resultSet.getLong(ID_ROW), resultSet.getString(Vacancies.NAME_ROW)));
+                vacanciesRecords.add(new VacanciesRecord(Vacancies.TABLE_NAME, SettingsManager.getValue(CURRENT_DATABASE_FILE_KEY), resultSet.getLong(ID_ROW), resultSet.getString(Vacancies.NAME_ROW), resultSet.getString(Vacancies.DIVISION_ROW),
+                        resultSet.getString(Vacancies.COUNTRY_ROW)));
             }
 
             return vacanciesRecords;
@@ -112,10 +114,29 @@ public final class RecordsGetter {
 
             List<InterviewRecord> interviewRecords = new ArrayList<>();
             while (resultSet.next()){
-                interviewRecords.add(new InterviewRecord(Vacancies.TABLE_NAME, SettingsManager.getValue(CURRENT_DATABASE_FILE_KEY), resultSet.getString(Interviews.NAME_ROW)));
+                interviewRecords.add(new InterviewRecord(Interviews.TABLE_NAME, SettingsManager.getValue(CURRENT_DATABASE_FILE_KEY), resultSet.getLong(ID_ROW), resultSet.getString(Interviews.NAME_ROW)));
             }
 
             return interviewRecords;
+        }catch (Exception e){
+            ErrorDialog.show(e);
+        }
+
+        return null;
+    }
+
+    public static @Nullable List<JobAppRecord> getAllJobApps(){
+        try{
+            String selectAll = getSelectRequest(JobApplications.TABLE_NAME);
+            PreparedStatement preparedStatement = Objects.requireNonNull(DatabaseService.getConnection(SettingsManager.getValue(CURRENT_DATABASE_FILE_KEY))).prepareStatement(selectAll);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            List<JobAppRecord> jobAppRecords = new ArrayList<>();
+            while (resultSet.next()){
+                jobAppRecords.add(new JobAppRecord(Interviews.TABLE_NAME, SettingsManager.getValue(CURRENT_DATABASE_FILE_KEY), resultSet.getLong(ID_ROW), resultSet.getString(JobApplications.APP_ROW)));
+            }
+
+            return jobAppRecords;
         }catch (Exception e){
             ErrorDialog.show(e);
         }

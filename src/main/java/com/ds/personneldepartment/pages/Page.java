@@ -29,6 +29,7 @@ public abstract class Page {
 
     private void createTile() {
         tile = new Tile(Tile.DEFAULT_WIDTH, Tile.DEFAULT_HEIGHT);
+        tile.setMaxHeight(670d);
         tile.animate();
 
         VBox vBox = new VBox();
@@ -70,6 +71,7 @@ public abstract class Page {
     }
 
     public void goToPreviousPage(){
+        close();
         getPrevoiusPage().open();
     }
 
