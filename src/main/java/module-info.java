@@ -1,0 +1,8 @@
+module com.ds.personneldepartment {
+    requires javafx.controls;
+    requires javafx.fxml;
+
+
+    opens com.ds.personneldepartment to javafx.fxml;
+    exports com.ds.personneldepartment;
+}
