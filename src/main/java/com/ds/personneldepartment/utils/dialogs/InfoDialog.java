@@ -1,8 +1,9 @@
-package com.ds.farmacy.utils.dialogs;
+package com.ds.personneldepartment.utils.dialogs;
 
-import com.ds.farmacy.utils.Utils;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+
+import static com.ds.personneldepartment.utils.Utils.getImage;
 
 public class InfoDialog {
     public static void show(String message){
@@ -12,7 +13,7 @@ public class InfoDialog {
             alert.setHeaderText(message);
 
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(Utils.getImage("images/info.png"));
+            stage.getIcons().add(getImage("images/info.png"));
 
             alert.showAndWait();
         }catch (Exception e){

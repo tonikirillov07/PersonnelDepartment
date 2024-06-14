@@ -1,4 +1,4 @@
-package com.ds.farmacy.utils.dialogs;
+package com.ds.personneldepartment.utils.dialogs;
 
 import javafx.scene.control.Alert;
 import org.jetbrains.annotations.NotNull;

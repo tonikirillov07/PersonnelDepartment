@@ -1,2 +1,6 @@
-package com.ds.personneldepartment.database.tables;public class Vacancies {
+package com.ds.personneldepartment.database.tables;
+
+public final class Vacancies {
+    public static final String TABLE_NAME = "vacancies";
+    public static final String NAME_ROW = "name";
 }

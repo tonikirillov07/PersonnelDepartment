@@ -1,2 +1,5 @@
-package com.ds.personneldepartment.utils.actionsListeners;public interface IOnAction {
+package com.ds.personneldepartment.utils.actionsListeners;
+
+public interface IOnAction {
+    void onAction();
 }

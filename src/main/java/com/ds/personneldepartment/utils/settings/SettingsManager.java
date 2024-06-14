@@ -1,6 +1,6 @@
-package com.ds.farmacy.utils.settings;
+package com.ds.personneldepartment.utils.settings;
 
-import com.ds.farmacy.utils.dialogs.ErrorDialog;
+import com.ds.personneldepartment.utils.dialogs.ErrorDialog;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.FileInputStream;

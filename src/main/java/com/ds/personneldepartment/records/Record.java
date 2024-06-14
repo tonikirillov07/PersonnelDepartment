@@ -1,4 +1,4 @@
-package com.ds.farmacy.records;
+package com.ds.personneldepartment.records;
 
 public abstract class Record {
     private final String tableName;

@@ -1,6 +1,6 @@
-package com.ds.farmacy.database;
+package com.ds.personneldepartment.database;
 
-import com.ds.farmacy.utils.dialogs.ErrorDialog;
+import com.ds.personneldepartment.utils.dialogs.ErrorDialog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Objects;
 
-import static com.ds.farmacy.database.DatabaseConstants.ID_ROW;
+import static com.ds.personneldepartment.database.tables.DefaultTablesConstants.ID_ROW;
 
 public class DatabaseService {
     public static @Nullable Connection getConnection(String databasePath){
