@@ -164,6 +164,10 @@ public class AdditionalTextField extends HBox {
         }
     }
 
+    public void setText(String text){
+        getTextField().setText(text);
+    }
+
     private void addTextField() {
         try{
             textField = isPasswordField ? new PasswordField() : new TextField();

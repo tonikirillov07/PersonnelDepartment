@@ -3,15 +3,14 @@ package com.ds.personneldepartment.pages;
 import com.ds.personneldepartment.additionalNodes.AdditionalButton;
 import com.ds.personneldepartment.additionalNodes.AdditionalMenuButton;
 import com.ds.personneldepartment.records.*;
+import com.ds.personneldepartment.utils.dialogs.ErrorDialog;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -156,6 +155,15 @@ public class MainPage extends Page{
 
         tableView.getColumns().addAll(idColumn, appColumn, vacanciesToAppsRationColumn);
         tableView.getItems().addAll(jobAppRecordList);
+
+        tableView.setOnMouseClicked(mouseEvent -> {
+            int selectedIndex = getSelectedRowIndexFromTableView(tableView);
+            if(selectedIndex < 0)
+                return;
+
+            JobAppRecord jobAppRecord = (JobAppRecord) tableView.getItems().get(selectedIndex);
+            openEditDataPage().createJobAppComponents(jobAppRecord);
+        });
     }
 
     private void displayAllInterviews(List<InterviewRecord> interviewRecordList){
@@ -169,6 +177,15 @@ public class MainPage extends Page{
 
         tableView.getColumns().addAll(idColumn, nameColumn);
         tableView.getItems().addAll(interviewRecordList);
+
+        tableView.setOnMouseClicked(mouseEvent -> {
+            int selectedIndex = getSelectedRowIndexFromTableView(tableView);
+            if(selectedIndex < 0)
+                return;
+
+            InterviewRecord interviewRecord = (InterviewRecord) tableView.getItems().get(selectedIndex);
+            openEditDataPage().createInterviewsComponents(interviewRecord);
+        });
     }
 
     private void displayAllVacancies(List<VacanciesRecord> vacanciesRecordList){
@@ -188,6 +205,15 @@ public class MainPage extends Page{
 
         tableView.getColumns().addAll(idColumn, nameColumn, divisionColumn, countryColumn);
         tableView.getItems().addAll(vacanciesRecordList);
+
+        tableView.setOnMouseClicked(mouseEvent -> {
+            int selectedIndex = getSelectedRowIndexFromTableView(tableView);
+            if(selectedIndex < 0)
+                return;
+
+            VacanciesRecord vacanciesRecord = (VacanciesRecord) tableView.getItems().get(selectedIndex);
+            openEditDataPage().createVacanciesComponents(vacanciesRecord);
+        });
     }
 
     private void displayStaffs(@NotNull List<StaffRecord> staffRecords){
@@ -222,6 +248,37 @@ public class MainPage extends Page{
 
         tableView.getColumns().addAll(idColumn, nameColumn, surnameColumn, IDNPColumn, addressColumn, telephoneColumn, postColumn, companyColumn, divisionColumn);
         tableView.getItems().addAll(staffRecords);
+
+        tableView.setOnMouseClicked(mouseEvent -> {
+            int selectedIndex = getSelectedRowIndexFromTableView(tableView);
+            if(selectedIndex < 0)
+                return;
+
+            StaffRecord staffRecord = (StaffRecord) tableView.getItems().get(selectedIndex);
+            openEditDataPage().createStaffComponents(staffRecord);
+        });
+    }
+
+    private int getSelectedRowIndexFromTableView(@NotNull TableView tableView){
+        try {
+            ObservableList tablePositionObservableList = tableView.getSelectionModel().getSelectedCells();
+            if (tablePositionObservableList.isEmpty())
+                return -1;
+
+            TablePosition tablePosition = (TablePosition) tablePositionObservableList.get(0);
+            return tablePosition.getRow();
+        }catch (Exception e){
+            ErrorDialog.show(e);
+        }
+
+        return -1;
+    }
+
+    private @NotNull AddDataPage openEditDataPage(){
+        AddDataPage editDataPage = new AddDataPage(this, getContentVbox(), "Редактирование");
+        editDataPage.open();
+
+        return editDataPage;
     }
 
     private void createButtonsHbox(){
